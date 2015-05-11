@@ -2,8 +2,9 @@
 
 % sample object constants
 initial_px = 0.275;     % initial pixel size in microns
-intensity_image = double(imread('C:\Program Files\MATLAB\R2014a\toolbox\images\imdata\cameraman.tif'));
-phase_image = double(imcrop(imread('C:\Program Files\MATLAB\R2014a\toolbox\images\imdata\westconcordorthophoto.png'), [0 0 256 256]));
+upsample = 5;
+intensity_image = double(imresize(imread('C:\Program Files\MATLAB\R2014a\toolbox\images\imdata\cameraman.tif'), upsample));
+phase_image = double(imresize(imcrop(imread('C:\Program Files\MATLAB\R2014a\toolbox\images\imdata\westconcordorthophoto.png'), [0 0 256 256]), upsample));
 object_length = 0.275*size(intensity_image, 1);     % length (and width) in microns
 [object_x, object_y] = meshgrid(-object_length/2:0.275:object_length/2 - 0.275, -object_length/2:0.275:object_length/2 - 0.275);
 

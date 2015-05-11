@@ -13,25 +13,33 @@ object = intensity_image.*exp(j*phase_image);
 %% The light source is assumed to be an LED matrix centered at origin - the origin being at the center of an LED. We will always illuminate with an odd-numbered square of LEDs, with one always at the center
 N = 2*illumination_layers - 1;   % side of square of illumination matrix
 
-for i = 1:N
-    for j = 1:N
+for a = 1:N
+    for b = 1:N
         % illumination is done in layers
         % we will calculate the x,y coordinates of the current LED
-        x = (i - illumination_layers)*LED_spacing;
-        y = (j - illumination_layers)*LED_spacing;
+        x = (a - illumination_layers)*LED_spacing;
+        y = (b - illumination_layers)*LED_spacing;
         
-        % Then we convert that into a wave vector
-        wavevector_denominator = sqrt(x^2 + y^2 + illumination_distance^2);
-        kx = wave_number*x/wavevector_denominator;
-        ky = wave_number*y/wavevector_denominator;
+        % illuminate it
+        illuminated_object = illuminate(object, x, y, object_x, object_y, illumination_distance, wave_number);
+                
+        %% Next, the object thus illuminated is IMAGED by an imaging sysem with given NA, which will behave like an LPF for spatial frequencies.
+        %{
+        % Hence we need to filter in the fourier domain to get the final images.
+        ft = fftshift(fft2(illuminated_object));
+        lpf_mask = maskk(0, 0, 224, size(ft, 1), size(ft, 2));
+        lpf_ft = zeros(size(ft));
+        lpf_ft(lpf_mask) = ft(lpf_mask);
+        lpf_image = ifft2(ifftshift(lpf_ft));
+        % imshow(real(imaged_image.*2), []);
         
-        % generate the illumination matrix
-        illumination_matrix = object_x*kx + object_y*ky;
-        % imshow(illumination_matrix,[])
+        %% After doing so, it is sampled with the 'sensor', which is a 5.5um pixel size, which means it is down-sampled by 20
+        imaged_image = imresize(lpf_image, (initial_px/sampled_px));
+        %}
+        imaged_image = imageit(illuminated_object, initial_px, sampled_px);
+        figure; imshow(abs(imaged_image), []);
         
-        % Then we apply the plane wave to the object
-        % given by exp(jk.r)*obj
-        illuminated_object = illumination_matrix.*object;
-        imshow(abs(illuminated_object),[])
+        fileName = sprintf('%i%i%s',a,b,'.png');
+        % imwrite(uint8(abs(illuminated_object.^2)), fileName);
     end
 end
