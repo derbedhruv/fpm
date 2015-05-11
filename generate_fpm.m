@@ -24,7 +24,7 @@ for a = 1:N
         illuminated_object = illuminate(object, x, y, object_x, object_y, illumination_distance, wave_number);
                 
         %% Next, the object thus illuminated is IMAGED by an imaging sysem with given NA, which will behave like an LPF for spatial frequencies.
-        imaged_image = imageit(illuminated_object, initial_px, sampled_px);
+        imaged_image = imageit(illuminated_object, initial_px, sampled_px, pupil_radius);
         % figure; imshow(abs(imaged_image), []);
         
         % scale the images to [0 255]

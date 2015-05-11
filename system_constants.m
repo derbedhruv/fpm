@@ -11,6 +11,8 @@ object_length = 0.275*size(intensity_image, 1);     % length (and width) in micr
 % Imaging system constants
 sampled_px = 5.5;
 NA = 0.08;              % Numerical aperture of simulated imaging system
+deltaF = 1/(2*size(intensity_image, 1)*0.275);  % the value (in spatial frequency units) of each pixel in the fourier domain
+pupil_radius = round((2*pi*NA/wavelength)/deltaF);     % in 
 
 % Illumination system constants
 wavelength = 0.632;     % wavelength of light used for simulated illumination, in microns
