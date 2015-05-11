@@ -24,22 +24,10 @@ for a = 1:N
         illuminated_object = illuminate(object, x, y, object_x, object_y, illumination_distance, wave_number);
                 
         %% Next, the object thus illuminated is IMAGED by an imaging sysem with given NA, which will behave like an LPF for spatial frequencies.
-        %{
-        % Hence we need to filter in the fourier domain to get the final images.
-        ft = fftshift(fft2(illuminated_object));
-        lpf_mask = maskk(0, 0, 224, size(ft, 1), size(ft, 2));
-        lpf_ft = zeros(size(ft));
-        lpf_ft(lpf_mask) = ft(lpf_mask);
-        lpf_image = ifft2(ifftshift(lpf_ft));
-        % imshow(real(imaged_image.*2), []);
-        
-        %% After doing so, it is sampled with the 'sensor', which is a 5.5um pixel size, which means it is down-sampled by 20
-        imaged_image = imresize(lpf_image, (initial_px/sampled_px));
-        %}
         imaged_image = imageit(illuminated_object, initial_px, sampled_px);
-        figure; imshow(abs(imaged_image), []);
+        % figure; imshow(abs(imaged_image), []);
         
         fileName = sprintf('%i%i%s',a,b,'.png');
-        % imwrite(uint8(abs(illuminated_object.^2)), fileName);
+        imwrite(uint8(abs(illuminated_object)), fileName);
     end
 end
