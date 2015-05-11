@@ -27,7 +27,10 @@ for a = 1:N
         imaged_image = imageit(illuminated_object, initial_px, sampled_px);
         % figure; imshow(abs(imaged_image), []);
         
+        % scale the images to [0 255]
+        imaged_image = 255*abs(imaged_image)/(max(max(abs(imaged_image))));
+        
         fileName = sprintf('%i%i%s',a,b,'.png');
-        imwrite(uint8(abs(illuminated_object)), fileName);
+        imwrite(uint8(imaged_image), fileName);
     end
 end
